@@ -4,6 +4,8 @@
   <pre><code>git clone  https://github.com/Vijayaiyappa/Student_ERP.git
   cd Student_ERP
   </code></pre>
+      <h3>Install dependencies</h3>
+  <pre><code> py manage.py runserver </code></pre>
     <h3>Run the server </h3>
   <pre><code> py manage.py runserver </code></pre>
   
