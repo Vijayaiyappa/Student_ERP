@@ -5,7 +5,7 @@
   cd Student_ERP
   </code></pre>
       <h3>Install dependencies</h3>
-  <pre><code> py manage.py runserver </code></pre>
+  <pre><code> pip install -r requirements.txt </code></pre>
     <h3>Run the server </h3>
   <pre><code> py manage.py runserver </code></pre>
   
