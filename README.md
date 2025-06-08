@@ -4,6 +4,7 @@
   <pre><code>git clone  https://github.com/Vijayaiyappa/Student_ERP.git
   cd Student_ERP
   </code></pre>
+    <h3>Run the server </h3>
   <pre><code> py manage.py runserver </code>
 ![image](https://github.com/user-attachments/assets/c26977f8-98db-4cf9-9ace-77b8faf9fd22)
 
