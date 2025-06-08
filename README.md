@@ -5,7 +5,8 @@
   cd Student_ERP
   </code></pre>
     <h3>Run the server </h3>
-  <pre><code> py manage.py runserver </code>
+  <pre><code> py manage.py runserver </code></pre>
+  
 ![image](https://github.com/user-attachments/assets/c26977f8-98db-4cf9-9ace-77b8faf9fd22)
 
 ![image](https://github.com/user-attachments/assets/4ad851bb-260e-4299-a3cf-22d2b4639b4b)
