@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student List</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 40px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            margin-top: 20px;
+            width: 100%;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 2px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #studentModal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+            display: none;
+            border-radius: 8px;
+            z-index: 1000;
+        }
+        #studentModal input {
+            display: block;
+            margin: 10px 0;
+            padding: 8px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav style="margin-bottom: 10px;  background-color: #343a40; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 20px; font-weight: bold; padding-bottom: 10px;">Teacher Portal</div>
+        {% if user.is_authenticated %}
+            <div>
+                <span style="margin-right: 20px;">Welcome, {{ user.username }}</span>
+                <form method="POST" action="{% url 'logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background:none; border:none; color:white; cursor:pointer;">Logout</button>
+                </form>            </div>
+        {% endif %}
+    </nav>
+    <h2 style="float: left;">Student Records</h2>
+    <button onclick="openAddModal()" style="float: right; padding-bottom: 10px">Add Student</button>
+    <table id="studentTable" class="display">
+        <thead>
+            <tr><th>Name</th><th>Subject</th><th>Marks</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr data-id="{{ student.id }}">
+                <td>{{ student.name }}</td>
+                <td>{{ student.subject }}</td>
+                <td>{{ student.marks }}</td>
+                <td>
+                    <button onclick="openEditModal({{ student.id }}, '{{ student.name }}', '{{ student.subject }}', {{ student.marks }})">Edit</button>
+                    <button onclick="deleteStudent({{ student.id }})">Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div id="studentModal">
+        <input type="hidden" id="studentId">
+        <input type="text" id="name" placeholder="Name">
+        <input type="text" id="subject" placeholder="Subject">
+        <input type="number" id="marks" placeholder="Marks">
+        <button onclick="saveStudent()">Save</button>
+        <button onclick="closeModal()">Cancel</button>
+    </div>
+
+    <script>
+       $(document).ready(function() {
+        $('#studentTable').DataTable();
+    });
+
+    function openAddModal() {
+        $('#studentId').val('');
+        $('#name').val('');
+        $('#subject').val('');
+        $('#marks').val('');
+        $('#studentModal').show();
+        $('#overlay').show();
+    }
+
+    function openEditModal(id, name, subject, marks) {
+        $('#studentId').val(id);
+        $('#name').val(name);
+        $('#subject').val(subject);
+        $('#marks').val(marks);
+        $('#studentModal').show();
+        $('#overlay').show();
+    }
+
+    function closeModal() {
+        $('#studentModal').hide();
+        $('#overlay').hide();
+    }
+
+    function saveStudent() {
+        const id = $('#studentId').val();
+        const name = $('#name').val();
+        const subject = $('#subject').val();
+        const marks = $('#marks').val();
+
+        const url = id ? '/edit_ajax/' : '/save_ajax/';
+        const payload = id ? {id, name, subject, marks} : {name, subject, marks};
+
+        fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken()},
+            body: JSON.stringify(payload)
+        }).then(() => location.reload());
+    }
+
+    function deleteStudent(id) {
+        if (confirm('Are you sure?')) {
+            fetch('/delete_ajax/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken()},
+                body: JSON.stringify({id})
+            }).then(() => location.reload());
+        }
+    }
+
+    function getCSRFToken() {
+        return document.cookie.split('; ')
+            .find(row => row.startsWith('csrftoken'))
+            ?.split('=')[1];
+    }
+    </script>
+</body>
+</html>
